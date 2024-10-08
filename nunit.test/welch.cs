@@ -21,12 +21,11 @@ namespace nunit.test
         }
 
         [Test]
-        public void cal_welch()
+        public void mock_data()
         {
-            var fd = new fft_psd();
             int seg_len = (int)Math.Floor(data.Length / 8.0);
             int noverlap = (int)Math.Floor(seg_len / 2.0);
-            fd.welch(data, 20, seg_len, noverlap);
+            fft_psd.welch(data, 20, seg_len, noverlap);
         }
     }
 }

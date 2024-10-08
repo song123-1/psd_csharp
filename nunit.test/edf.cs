@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using edflib;
 using System.IO;
+using System;
 
 namespace nunit.test
 {
@@ -11,10 +12,16 @@ namespace nunit.test
 
         private edf_file edf_file;
 
-        [OneTimeSetUp]
+        [SetUp]
         public void set_up()
         {
             edf_file = new edf_file(file);
+        }
+
+        [TestCase("1")]
+        public void with_not_exist(string file)
+        {
+            Assert.Throws<FileNotFoundException>(() => edf_file.open_edf(file));
         }
 
         [Test]
@@ -23,10 +30,29 @@ namespace nunit.test
             Assert.IsTrue(edf_file.open_edf(file));
         }
 
+        [TestCase(-1)]
+        public void with_is_invalid(int pos_cnt)
+        {
+            Assert.Throws<ArgumentException>(() => edf_file.read_data(pos_cnt));
+        }
+
+        [TestCase(10000000)]
+        public void with_out_range(int out_cnt)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => edf_file.read_data(out_cnt));
+        }
+
         [Test]
-        public void read_cnt([Values(22)] int cnt)
+        public void with_is_valid([Values(22)] int cnt)
         {
             Assert.IsTrue(edf_file.read_data(cnt));
+        }
+
+
+        [TearDown]
+        public void close_file()
+        {
+            edf_file.edf_close();
         }
     }
 }

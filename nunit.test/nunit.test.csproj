@@ -28,6 +28,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="asserts\diff.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
       <None Update="asserts\sine_wave.csv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>

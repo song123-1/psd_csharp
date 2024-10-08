@@ -5,6 +5,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using Fft;
 using System;
+using System.Linq;
+using common;
 
 namespace nunit.test
 {
@@ -16,7 +18,7 @@ namespace nunit.test
         private edf_file edf_file;
 
         // List of lead pairs
-        private List<(string, string)> leadPairs = new List<(string, string)>
+        private List<(string, string)> lead_pairs = new List<(string, string)>
             {
                 ("EEG Fp1-REF", "EEG F3-REF"),
                 ("EEG Fp2-REF", "EEG F4-REF"),
@@ -39,58 +41,44 @@ namespace nunit.test
             };
 
 
-        [OneTimeSetUp]
+        [SetUp]
         public void set_up()
         {
             edf_file = new edf_file(file);
         }
 
         [Test]
-        public void cal_psd()
+        public void mock_data()
         {
-            Assert.IsTrue(edf_file.read_data(22));
-            CalculatePsdForLeads(edf_file);
+            string csv = Path.Combine(helper.assert_dir, "diff.csv");
+            double[] data = helper.read_csv<double>(csv);
+
+            var x = fft_psd.get_one_lead_psd(data, 4478, 5);
         }
 
-
-        public void CalculatePsdForLeads(edf_file psd)
+        [Test]
+        public void edf_psd()
         {
-            string csv = "C:\\Users\\admin\\source\\For_test_PSD\\For_test_PSD\\diff.csv";
-            List<double> data = new List<double>();
+            Assert.IsTrue(edf_file.read_data(22));
 
-            using (var reader = new StreamReader(csv))
+            foreach (var (lead1, lead2) in lead_pairs)
             {
-                string line;
-                // Skip the header line
-                reader.ReadLine();
+                var (signal1, signal2) = edf_file.retrieve_leads(lead1, lead2);
+                Assert.IsNotNull(signal1);
+                Assert.IsNotNull(signal2);
+                Assert.IsTrue(signal1.Length == signal2.Length);
 
-                while ((line = reader.ReadLine()) != null)
-                {
-                    double value = 0;
+                double[] diff = array_op.subtract_arr(signal1, signal2);
 
-                    var values = line.Split(',');
-                    if (values.Length == 2)
-                    {
-                        value = Convert.ToDouble(values[0]);
 
-                    }
-                    else
-                    {
-                        value = Convert.ToDouble(line);
-                    }
-
-                    data.Add(value);
-                }
+                var x = fft_psd.get_one_lead_psd(diff, 4478, 5);
             }
+        }
 
-            fft_psd fft_Psd = new fft_psd();
-            var x = fft_Psd.get_one_lead_psd(data.ToArray(), 4478, 5);
-            //foreach (var (lead1, lead2) in leadPairs)
-            //{
-            //    var difference = psd.get_lead_diff(lead1, lead2);
-            //    difference = new double[] { 1.0, 1.0, 1.0, 1.0 };
-            //    var x = fft_Psd.get_one_lead_psd(difference, 4478, 5);
-            //}
+        [TearDown]
+        public void close_file()
+        {
+            edf_file.edf_close();
         }
     }
 }

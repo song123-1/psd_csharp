@@ -21,11 +21,10 @@ namespace nunit.test
         }
 
         [Test]
-        public void diff_fft_ifft()
+        public void mock_data_fft_ifft()
         {
-            var fd = new fft_psd();
-            var x = fd.fft(data);
-            var y = fd.ifft(x);
+            var x = fft_psd.fft(data);
+            var y = fft_psd.ifft(x);
 
             double tolerance = 1e-10; // …Ë∂®»›≤Ó÷µ
             for (int i = 0; i < data.Length; i++)
@@ -36,10 +35,9 @@ namespace nunit.test
         }
 
         [TestCaseSource(nameof(InputCases))]
-        public void input_fft(Complex[] input)
+        public void mock_data_fft(Complex[] input)
         {
-            var fd = new fft_psd();
-            var x = fd.fft(input);
+            var x = fft_psd.fft(input);
         }
 
 

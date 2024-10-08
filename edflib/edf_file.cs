@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System;
+using System.IO;
 
 namespace edflib
 {
@@ -18,15 +19,38 @@ namespace edflib
 
         ~edf_file()
         {
-            if (edflib_func.edflib_is_file_used(_file) == 1)
-            {
-                edflib_func.edfclose_file(_hdr.handle);
-            }
+            edf_close();
         }
 
+        /// <summary>
+        /// Close the edf.
+        /// </summary>
+        public bool edf_close()
+        {
+            int flag = 0;
+            if (edflib_func.edflib_is_file_used(_file) == 1)
+            {
+                flag = edflib_func.edfclose_file(_hdr.handle);
+            }
+
+            return flag == 0;
+        }
+
+        /// <summary>
+        /// Open the edf.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
         public bool open_edf(string file = null)
         {
             if (file != null) _file = file;
+
+            // Throwing exception if the file does not exist. 
+            if (!File.Exists(_file))
+            {
+                throw new FileNotFoundException("The edf file does not exist!");
+            }
 
             _hdr = new edflib_hdr_t();
             IntPtr hdr_ptr = IntPtr.Zero;
@@ -68,8 +92,18 @@ namespace edflib
 
             _data_dict = new Dictionary<string, double[]>();
 
-
             int batch_size = 16384;
+
+            int max_cnt = _hdr.signalparam.Length;
+            if (count <= 0)
+            {
+                throw new ArgumentException("Incoming effective value");
+            }
+
+            if (count > max_cnt)
+            {
+                throw new ArgumentOutOfRangeException($"The count argument is out of range. The maximum value is {max_cnt}");
+            }
 
             // 遍历
             for (int i = 0; i < count; i++)
@@ -82,6 +116,9 @@ namespace edflib
                 {
                     long samples_to_read = Math.Min(batch_size, total_samples - offset);
                     double[] buf = new double[(int)samples_to_read];
+
+                    //edflib_func.edfseek(_hdr.handle, i, offset, edflib_constants.EDFSEEK_SET);
+
                     int x = edflib_func.edfread_physical_samples(_hdr.handle, i, (int)samples_to_read, buf);
                     if (x == -1)
                     {
@@ -94,38 +131,24 @@ namespace edflib
                 }
 
                 // Remove redundance the spaces
-                label = label.TrimEnd(' '); 
+                label = label.TrimEnd(' ');
                 _data_dict[label] = bufs;
             }
 
             return true;
         }
 
-        public double[] get_lead_diff(string lead1, string lead2)
-        {
-            bool x = true;
-            x = _data_dict.TryGetValue(lead1, out double[] signal1);
-            if (!x) return null;
-            x = _data_dict.TryGetValue(lead2, out double[] signal2);
-            if (!x) return null;
 
-            return subtract_arrays(signal1, signal2);
-        }
+        public (double[] signal1, double[] signal2) retrieve_leads(
+            string lead1, string lead2) => (retrieve(lead1), retrieve(lead2));
 
-        public static double[] subtract_arrays(double[] first, double[] second)
-        {
-            if (first.Length != second.Length)
-            {
-                throw new ArgumentException("Arrays must be of the same length.");
-            }
 
-            double[] result = new double[first.Length];
-            for (int i = 0; i < first.Length; i++)
-            {
-                result[i] = first[i] - second[i];
-            }
-
-            return result;
-        }
+        /// <summary>
+        /// Retrieve the specified key value.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private double[] retrieve(string key)
+         => _data_dict.TryGetValue(key, out double[] signal) ? signal : null;
     }
 }

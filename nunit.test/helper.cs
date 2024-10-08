@@ -22,16 +22,22 @@ namespace nunit.test
                 while ((line = reader.ReadLine()) != null)
                 {
                     var values = line.Split(',');
-                    double value = Convert.ToDouble(values[1]);
 
-                    data.Add(ConvertValue<T>(value));
+                    if (values.Length == 2)
+                    {
+                        data.Add(ConvertValue<T>(values[1]));
+                    }
+                    else
+                    {
+                        data.Add(ConvertValue<T>(values[0]));
+                    }
                 }
             }
 
             return data.ToArray();
         }
 
-        private static T ConvertValue<T>(double value)
+        private static T ConvertValue<T>(string value)
         {
             switch (Type.GetTypeCode(typeof(T)))
             {
