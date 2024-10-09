@@ -1,14 +1,16 @@
-﻿using NUnit.Framework;
-using edflib;
+﻿using System;
 using System.IO;
-using System;
+
+using edflib;
+
+using NUnit.Framework;
 
 namespace nunit.test
 {
     [TestFixture]
     public class edf
     {
-        private string file = Path.Combine(helper.assert_dir, "X.edf");
+        private readonly string file = Path.Combine(helper.assert_dir, "X.edf");
 
         private edf_file edf_file;
 

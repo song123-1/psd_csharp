@@ -1,24 +1,25 @@
-﻿using edflib;
+﻿using System.Collections.Generic;
 using System.IO;
 
-using NUnit.Framework;
-using System.Collections.Generic;
-using Fft;
-using System;
-using System.Linq;
 using common;
+
+using edflib;
+
+using Fft;
+
+using NUnit.Framework;
 
 namespace nunit.test
 {
     [TestFixture]
     public class psd
     {
-        private string file = Path.Combine(helper.assert_dir, "X.edf");
+        private readonly string file = Path.Combine(helper.assert_dir, "X.edf");
 
         private edf_file edf_file;
 
         // List of lead pairs
-        private List<(string, string)> lead_pairs = new List<(string, string)>
+        private readonly List<(string, string)> lead_pairs = new List<(string, string)>
             {
                 ("EEG Fp1-REF", "EEG F3-REF"),
                 ("EEG Fp2-REF", "EEG F4-REF"),

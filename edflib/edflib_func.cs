@@ -6,18 +6,18 @@ namespace edflib
     public static class edflib_func
     {
         // edflib_is_file_used
-        [DllImport("edf.dll", 
+        [DllImport("edf.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int edflib_is_file_used(
             [MarshalAs(UnmanagedType.LPStr)] string path);
 
         // edfclose_file
-        [DllImport("edf.dll", 
+        [DllImport("edf.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int edfclose_file(int handle);
 
         // Import the edfopen_file_readonly function
-        [DllImport("edf.dll", 
+        [DllImport("edf.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int edfopen_file_readonly(
             [MarshalAs(UnmanagedType.LPStr)] string path,
@@ -25,7 +25,7 @@ namespace edflib
             int read_annotations);
 
         // Import the edfread_physical_samples function
-        [DllImport("edf.dll", 
+        [DllImport("edf.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int edfread_physical_samples(
             int handle,
@@ -33,7 +33,7 @@ namespace edflib
             int n,
             [Out] double[] buf);
 
-        [DllImport("edf.dll", 
+        [DllImport("edf.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern long edfseek(
             int handle,

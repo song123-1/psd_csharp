@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace edflib
 {
@@ -15,11 +15,6 @@ namespace edflib
         public edf_file(string file)
         {
             _file = file;
-        }
-
-        ~edf_file()
-        {
-            edf_close();
         }
 
         /// <summary>
@@ -82,6 +77,13 @@ namespace edflib
             return true;
         }
 
+        /// <summary>
+        /// Read data.
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public bool read_data(int count)
         {
             // Open the file before reading when the file isn`t opened.
@@ -138,10 +140,14 @@ namespace edflib
             return true;
         }
 
-
+        /// <summary>
+        /// Retrieve key
+        /// </summary>
+        /// <param name="lead1"></param>
+        /// <param name="lead2"></param>
+        /// <returns></returns>
         public (double[] signal1, double[] signal2) retrieve_leads(
             string lead1, string lead2) => (retrieve(lead1), retrieve(lead2));
-
 
         /// <summary>
         /// Retrieve the specified key value.

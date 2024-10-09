@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Numerics;
 
 using Fft;
 
@@ -12,7 +11,7 @@ namespace nunit.test
     class welch
     {
         double[] data = null;
-        private string file = Path.Combine(helper.assert_dir, "sine_wave.csv");
+        private readonly string file = Path.Combine(helper.assert_dir, "sine_wave.csv");
 
         [SetUp]
         public void set_up()

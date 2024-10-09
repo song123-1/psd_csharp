@@ -25,35 +25,35 @@ namespace Fft
     {
         public const string dll_name = "libfftw3-3.dll";
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr fftw_plan_guru_dft(int rank, IntPtr dims, int howmany_rank, IntPtr howmany_dims, IntPtr inArray, IntPtr outArray, int sign, uint flags);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr fftw_execute_dft(IntPtr plan, IntPtr inArray, IntPtr outArray);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr fftw_plan_dft_r2c_1d(int n, IntPtr inArray, IntPtr outArray, uint flags);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr fftw_plan_dft_1d(int n, IntPtr inArray, IntPtr outArray, int sign, uint flags);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern void fftw_execute(IntPtr plan);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern void fftw_destroy_plan(IntPtr plan);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr fftw_malloc(int size);
 
-        [DllImport(dll_name, 
+        [DllImport(dll_name,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern void fftw_free(IntPtr ptr);
     }

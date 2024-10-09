@@ -1,18 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
-using Fft;
-using NUnit.Framework;
-using System.Linq;
 using System.Numerics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using Fft;
+
+using NUnit.Framework;
 
 namespace nunit.test
 {
     public class fft
     {
         Complex[] data = null;
-        private string file = Path.Combine(helper.assert_dir, "sine_wave.csv");
+        private readonly string file = Path.Combine(helper.assert_dir, "sine_wave.csv");
 
         [SetUp]
         public void Setup()
@@ -46,7 +46,7 @@ namespace nunit.test
             get
             {
                 yield return new TestCaseData(new Complex[] {
-                    new Complex(0, 0), 
+                    new Complex(0, 0),
                     new Complex(-5.8201672e-16, 0),
                 });
             }

@@ -93,7 +93,7 @@ namespace Fft
         /// <param name="input"></param>
         /// <returns></returns>
         public static Complex[] ifft(Complex[] input) => compute(input, true, fftw_direction.BACKWARD);
-        
+
         /// <summary>
         /// Welch algorithm
         /// </summary>
@@ -112,7 +112,7 @@ namespace Fft
             Array.Copy(win_orig, win_truncate, nperseg);
 
             double win_sum = 0;
-            
+
             for (int i = 0; i < win_truncate.Length; i++)
             {
                 win_sum += win_truncate[i] * win_truncate[i];
@@ -150,7 +150,7 @@ namespace Fft
                 {
                     //Complex.Conjugate(c)*c
                     double magnitude_sqrt = Math.Pow(fft_rs[2 * j], 2) + Math.Pow(fft_rs[2 * j + 1], 2);
-                    
+
                     fft_results[i][j] = magnitude_sqrt * scale;
                     // 共轭性
                     if (nperseg % 2 == 0 && nperseg > 2)
