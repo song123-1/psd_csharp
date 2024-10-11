@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -70,10 +71,11 @@ namespace edflib
                     //
                 }
 
-                _opened = true;
+                _opened = false;
                 return false;
             }
 
+            _opened = true;
             return true;
         }
 
@@ -138,6 +140,106 @@ namespace edflib
             }
 
             return true;
+        }
+
+        public Dictionary<string, int[]> read_data_all()
+        {
+            // Open the file before reading when the file isn`t opened.
+            if (!_opened)
+            {
+                if (!open_edf()) return null;
+            }
+
+            var data_dict = new Dictionary<string, int[]>();
+
+            // Allocate memory for the buffer
+            IntPtr[] buf = new IntPtr[_hdr.edfsignals];
+            for (int i = 0; i < _hdr.edfsignals; i++)
+            {
+                long smpl_nums = _hdr.signalparam[i].smp_in_datarecord * _hdr.datarecords_in_file;
+                buf[i] = Marshal.AllocHGlobal((int)smpl_nums * sizeof(int));
+            }
+
+            edflib_func.edfread_all_digital_samples(_hdr.handle, buf);
+            
+            // Copy the data to the dictionary
+            for (int i = 0; i < _hdr.edfsignals; i++)
+            {
+                string label = _hdr.signalparam[i].label.TrimEnd(' ');
+                long smpl_nums = _hdr.signalparam[i].smp_in_datarecord * _hdr.datarecords_in_file;
+                int[] bufs = new int[smpl_nums];
+
+                Marshal.Copy(buf[i], bufs, 0, (int)smpl_nums);
+                if (data_dict.ContainsKey(label))
+                {
+
+                }
+                data_dict[label] = bufs;
+            }
+
+            // 使用完毕后记得释放分配的内存，防止内存泄漏
+            for (int j = 0; j < _hdr.edfsignals; j++)
+            {
+                Marshal.FreeHGlobal(buf[j]);
+            }
+
+            return data_dict;
+        }
+
+        public Dictionary<string, int[]> read_raw_data(int count)
+        {
+            // Open the file before reading when the file isn`t opened.
+            if (!_opened)
+            {
+                if (!open_edf()) return null;
+            }
+
+            var data_dict = new Dictionary<string, int[]>();
+
+            int batch_size = 16384;
+
+            int max_cnt = _hdr.edfsignals;
+            if (count <= 0)
+            {
+                throw new ArgumentException("Incoming effective value");
+            }
+
+            if (count > max_cnt)
+            {
+                throw new ArgumentOutOfRangeException($"The count argument is out of range. The maximum value is {max_cnt}");
+            }
+
+            // 遍历
+            for (int i = 0; i < count; i++)
+            {
+                string label = _hdr.signalparam[i].label;
+                long total_samples = _hdr.signalparam[i].smp_in_datarecord * _hdr.datarecords_in_file;
+                int[] bufs = new int[total_samples];
+
+                for (int offset = 0; offset < total_samples; offset += batch_size)
+                {
+                    long samples_to_read = Math.Min(batch_size, total_samples - offset);
+                    int[] buf = new int[(int)samples_to_read];
+
+                    //edflib_func.edfseek(_hdr.handle, i, offset, edflib_constants.EDFSEEK_SET);
+
+                    int x = edflib_func.edfread_digital_samples(_hdr.handle, i, (int)samples_to_read, buf);
+                    if (x == -1)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        Array.Copy(buf, 0, bufs, offset, samples_to_read);
+                    }
+                }
+
+                // Remove redundance the spaces
+                label = label.TrimEnd(' ');
+                data_dict[label] = bufs;
+            }
+
+            return data_dict;
         }
 
         /// <summary>

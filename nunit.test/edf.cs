@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using edflib;
 
@@ -50,6 +52,16 @@ namespace nunit.test
             Assert.IsTrue(edf_file.read_data(cnt));
         }
 
+        [Test]
+        public void read_all_data()
+        {
+            var data = edf_file.read_data_all();
+            var data2 = edf_file.read_raw_data(44);
+            Assert.IsTrue(data.Count == data2.Count);
+
+            // 一次性比较提取的数据
+            CollectionAssert.AreEqual(data.Values.ToArray(), data2.Values.ToArray(), "提取的数据不匹配");
+        }
 
         [TearDown]
         public void close_file()

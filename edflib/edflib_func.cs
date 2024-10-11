@@ -33,6 +33,22 @@ namespace edflib
             int n,
             [Out] double[] buf);
 
+        // Import the edfread_digital_samples function
+        [DllImport("edf.dll",
+            CallingConvention = CallingConvention.Cdecl)]
+        public static extern int edfread_digital_samples(
+            int handle,
+            int edfsignal,
+            int n,
+            [Out] int[] buf);
+
+        // Import the edfread_all_digital_samples function
+        [DllImport("edf.dll",
+            CallingConvention = CallingConvention.Cdecl)]
+        public static extern int edfread_all_digital_samples(
+            int handle,
+            [Out] IntPtr[] buf);
+
         [DllImport("edf.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern long edfseek(
